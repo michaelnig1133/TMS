@@ -14,7 +14,7 @@ pipeline {
         stage('Clone Repository') {
             agent { label 'master' }
             steps {
-                git branch: 'main', url: 'https://github.com/michaelnig1133/TMS/tree/main'
+                git branch: 'main', url: 'https://github.com/michaelnig1133/TMS'
             }
         }
 
