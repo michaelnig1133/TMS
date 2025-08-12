@@ -5,7 +5,7 @@ FROM python:3.10-slim
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Set working directory inside container
+# Set working directory
 WORKDIR /app
 
 # Install system dependencies
@@ -20,26 +20,17 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install pipenv (only if your project uses Pipenv)
-# RUN pip install --upgrade pip
-# RUN pip install pipenv
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+# Upgrade pip and install dependencies early to leverage Docker cache
+COPY requirements.txt .
 
-# Copy Pipfile and Pipfile.lock first
-# COPY Pipfile Pipfile.lock ./
+# Removed --no-cache-dir for faster builds
+RUN pip install -r requirements.txt
 
-# Install python dependencies
-# RUN pipenv install --deploy --system
-
-# Copy the rest of the project
+# Copy the rest of the application
 COPY . .
 
-# Collect static files (optional if you use Django admin)
-# RUN python manage.py collectstatic --noinput
-
-# Expose port 8000
+# Expose the port
 EXPOSE 8000
 
-# Start Django server
+# Start the app
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
